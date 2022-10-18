@@ -1,17 +1,19 @@
 import Header from './components/Header';
+import FeebackList from './components/FeedbackList';
+import { useState } from 'react';
+import FeedbackData from './data/FeedbackData'
 
 function App() {
-  // it looks like html but it's actually returning jsx
+  const [feedback, setFeedback] = useState(FeedbackData)
   return (
     <>
       <Header />
       <div className='container'>
-        <h1>My App</h1>
+        {/* passing feedback items array to feedback component */}
+        <FeebackList feedback={feedback} />
       </div>
     </>
   );
 }
-
-
 
 export default App;
