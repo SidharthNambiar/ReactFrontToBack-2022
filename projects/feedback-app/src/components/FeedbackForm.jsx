@@ -1,20 +1,28 @@
 import Card from './shared/Card';
-// this is the useStateHook
 import { useState, useEffect } from 'react';
 import Button from './shared/Button';
 import RatingSelect from './RatingSelect';
+import FeedbackContext from '../context/FeedbackContext';
+import { useContext } from 'react';
 
-function FeedbackForm({handleAdd}) {
+function FeedbackForm() {
   const [text, setText] = useState('');
   const [rating, setRating] = useState(10);
   const [btnDisabled, setBtnDisabled] = useState(true);
   const [message, setMessage] = useState('');
 
-  const handleTextChange = (e) => {
-    setText(e.target.value);
-  };
+  const { addFeedback, feedbackEdit, updateFeedback } = useContext(FeedbackContext);
 
   useEffect(() => {
+    console.log(feedbackEdit.item.rating)
+    if (feedbackEdit.edit === true) {
+      setBtnDisabled(false)
+      setText(feedbackEdit.item.text)
+      setRating(feedbackEdit.item.rating)
+    }
+  }, [feedbackEdit])
+
+  const handleTextChange = (e) => {
     if (text === '') {
       setBtnDisabled(true);
       setMessage(null);
@@ -25,10 +33,12 @@ function FeedbackForm({handleAdd}) {
       setMessage(null);
       setBtnDisabled(false);
     }
-  });
+    setText(e.target.value);
+  };
+
+  // useEffect(() => {});
 
   const handleSubmit = (e) => {
-    console.log("in submit")
     // prevent default behavior of submitting to the actual file
     e.preventDefault();
     if (text.trim().length > 9) {
@@ -36,17 +46,22 @@ function FeedbackForm({handleAdd}) {
         text,
         rating,
       };
-      handleAdd(newFeedback)
-      setText("")
+      if (feedbackEdit.edit === true) {
+        updateFeedback(feedbackEdit.item.id, newFeedback)
+      }
+      else {
+        addFeedback(newFeedback);
+      }
+      
+      setText('');
     }
-    
   };
 
   return (
     <Card>
       <form onSubmit={handleSubmit}>
         <h2>How would you rate your service with us?</h2>
-        <RatingSelect select={(rating) => setRating(rating)} />
+        <RatingSelect select={(rating) => setRating(rating)}  />
         <div className='input-group'>
           <input
             onChange={handleTextChange}
@@ -65,4 +80,3 @@ function FeedbackForm({handleAdd}) {
 }
 
 export default FeedbackForm;
-
